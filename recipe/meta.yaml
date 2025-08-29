@@ -1,30 +1,32 @@
-{% set version = "0.1.40" %}
-{% set sha256 = "385dfb965eca75164d256486c7cf9bae772d24144249fd18b9d15d3cffb70eea" %}
+{% set name = "python-debian" %}
+{% set version = "1.0.1" %}
 
 package:
-  name: python-debian
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/p/python-debian/python-debian-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3ada9b83a3d671b58081782c0969cffa0102f6ce433fbbc7cf21275b8b5cc771
 
 build:
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: true  # [py<37]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
     - pip
     - python
     - wheel
-    - setuptools
+    - setuptools >=61
+    - setuptools_scm >=6.2
+    - charset-normalizer
   run:
-    - chardet
     - python
-    - six
+    - charset-normalizer
 
+# Tests folder is not added to tarball
 test:
   imports:
     - debian
@@ -40,6 +42,11 @@ about:
   license_file: gpl-3.0.txt
   license_family: GPL
   summary: Debian package related modules
+  description: |
+    The debian Python modules work with Debian-related data formats,
+    providing a means to read data from files involved in Debian packaging,
+    and the distribution of Debian packages. The ability to create or edit
+    the files is also available for some formats.
   doc_url: https://python-debian-team.pages.debian.net/python-debian/
   dev_url: https://salsa.debian.org/python-debian-team/python-debian
 

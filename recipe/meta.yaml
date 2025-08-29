@@ -6,12 +6,16 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 3ada9b83a3d671b58081782c0969cffa0102f6ce433fbbc7cf21275b8b5cc771
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 3ada9b83a3d671b58081782c0969cffa0102f6ce433fbbc7cf21275b8b5cc771
+  - url: https://salsa.debian.org/python-debian-team/{{ name }}/-/archive/{{ version }}/{{ name }}-{{ version }}.tar.bz2
+    sha256: c8f15572589a52e9486ec7fbcf9a2395577e97a8444ac2083cb9c7bf8c7ffc1a
+    folder: gl
 
 build:
   number: 0
-  skip: true  # [py<37]
+  # On OSX CI: Error: HTTP 000 CONNECTION FAILED for url <https://salsa.debian.org/python-debian-team/python-debian/-/archive/1.0.1/python-debian-1.0.1.tar.bz2>
+  skip: true  # [py<37 or osx]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
@@ -21,25 +25,32 @@ requirements:
     - wheel
     - setuptools >=61
     - setuptools_scm >=6.2
-    - charset-normalizer
   run:
     - python
     - charset-normalizer
 
-# Tests folder is not added to tarball
 test:
+  source_files:
+    - gl/conftest.py
+    - gl/tests
   imports:
     - debian
-    - debian_bundle
   requires:
     - pip
+    - pytest
   commands:
     - pip check
+    # subprocess.CalledProcessError: Command '['/usr/bin/ar', 'rU', 
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/test.deb', 
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/debian-binary', 
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/control.tar.gz', 
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/data.tar.gz']' returned non-zero exit status 1.
+    - pytest -v --ignore=gl/tests/test_debfile.py
 
 about:
   home: https://salsa.debian.org/python-debian-team/python-debian
   license: GPL-2.0-or-later
-  license_file: gpl-3.0.txt
+  license_file: gpl-2.0.txt
   license_family: GPL
   summary: Debian package related modules
   description: |
@@ -47,7 +58,7 @@ about:
     providing a means to read data from files involved in Debian packaging,
     and the distribution of Debian packages. The ability to create or edit
     the files is also available for some formats.
-  doc_url: https://python-debian-team.pages.debian.net/python-debian/
+  doc_url: https://python-debian-team.pages.debian.net/python-debian
   dev_url: https://salsa.debian.org/python-debian-team/python-debian
 
 extra:

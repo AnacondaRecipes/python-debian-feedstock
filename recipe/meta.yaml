@@ -1,21 +1,17 @@
 {% set name = "python-debian" %}
-{% set version = "1.0.1" %}
+{% set version = "1.1.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 3ada9b83a3d671b58081782c0969cffa0102f6ce433fbbc7cf21275b8b5cc771
   - url: https://salsa.debian.org/python-debian-team/{{ name }}/-/archive/{{ version }}/{{ name }}-{{ version }}.tar.bz2
-    sha256: c8f15572589a52e9486ec7fbcf9a2395577e97a8444ac2083cb9c7bf8c7ffc1a
-    folder: gl
+    sha256: a8d50b15ef5e2d88a7a8290474f7edbda9379b277918dd8e83bc139bc73afba5
 
 build:
   number: 0
-  # On OSX CI: Error: HTTP 000 CONNECTION FAILED for url <https://salsa.debian.org/python-debian-team/python-debian/-/archive/1.0.1/python-debian-1.0.1.tar.bz2>
-  skip: true  # [py<37 or osx]
+  skip: true  # [py<37]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
@@ -31,8 +27,8 @@ requirements:
 
 test:
   source_files:
-    - gl/conftest.py
-    - gl/tests
+    - conftest.py
+    - tests
   imports:
     - debian
   requires:
@@ -40,12 +36,12 @@ test:
     - pytest
   commands:
     - pip check
-    # subprocess.CalledProcessError: Command '['/usr/bin/ar', 'rU', 
-    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/test.deb', 
-    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/debian-binary', 
-    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/control.tar.gz', 
+    # subprocess.CalledProcessError: Command '['/usr/bin/ar', 'rU',
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/test.deb',
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/debian-binary',
+    # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/control.tar.gz',
     # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/data.tar.gz']' returned non-zero exit status 1.
-    - pytest -v --ignore=gl/tests/test_debfile.py
+    - pytest -v --ignore=tests/test_debfile.py
 
 about:
   home: https://salsa.debian.org/python-debian-team/python-debian

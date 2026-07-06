@@ -6,16 +6,12 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://pypi.org/packages/source/p/python-debian/python_debian-1.1.1.tar.gz
-    sha256: fe4fc3dc798dbf1f0ef5865e2b1b4f7cc0352b6a511b25ab7594906c64a73629
   - url: https://salsa.debian.org/python-debian-team/{{ name }}/-/archive/{{ version }}/{{ name }}-{{ version }}.tar.bz2
     sha256: a8d50b15ef5e2d88a7a8290474f7edbda9379b277918dd8e83bc139bc73afba5
-    folder: gl
 
 build:
   number: 0
-  # On OSX CI: Error: HTTP 000 CONNECTION FAILED for url <https://salsa.debian.org/python-debian-team/python-debian/-/archive/1.0.1/python-debian-1.0.1.tar.bz2>
-  skip: true  # [py<37 or osx]
+  skip: true  # [py<37]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
@@ -31,8 +27,8 @@ requirements:
 
 test:
   source_files:
-    - gl/conftest.py
-    - gl/tests
+    - conftest.py
+    - tests
   imports:
     - debian
   requires:
@@ -45,7 +41,7 @@ test:
     # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/debian-binary',
     # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/control.tar.gz',
     # '/var/folders/h1/cwbpqsn95pb73q3m8nxpj47c0000gp/T/test_debfile.gcvtnwri/data.tar.gz']' returned non-zero exit status 1.
-    - pytest -v --ignore=gl/tests/test_debfile.py
+    - pytest -v --ignore=tests/test_debfile.py
 
 about:
   home: https://salsa.debian.org/python-debian-team/python-debian
